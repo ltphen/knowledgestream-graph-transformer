@@ -135,4 +135,5 @@ dmypy.json
 # Misc
 nodes.txt
 relations.txt
+shape.txt
 *.npy
