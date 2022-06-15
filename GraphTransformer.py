@@ -100,6 +100,9 @@ class GraphTransformer:
         return graphIterator
     
     def _saveIDs(self):
+        with open("data/kg/shape.txt", 'w') as shapeFile:
+            shapeFile.write(str(self.getShape()) + '\n')
+
         with open("data/kg/nodes.txt", 'w') as nodesFile:
             for resource in self.nodeId.keys():
                 nodesFile.write("{} {}\n".format(self.nodeId[resource], resource))
