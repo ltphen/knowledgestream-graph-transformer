@@ -1,5 +1,5 @@
-from GraphTransformer import GraphTransformer
-from Graph import Graph
+from transformer.GraphTransformer import GraphTransformer
+from transformer.Graph import Graph
 import os, argparse
 
 def main():
