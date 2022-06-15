@@ -15,6 +15,14 @@ class GraphTransformer:
         self.relIdCount = 0
 
     def generateAdjacency(self, graphPath):
+        """
+        Generate an adjacency for the turtle graph at graphPath.
+        First, read the graph line by line and assign a ID to each resource.
+        Second, save the IDs in a text file.
+        Finally, generate a list of facts in the form [subjectID, objectID, predicateID]
+        
+        Return that list as a numpy array.
+        """
         ### Generate IDs
         count = 0
         graphIterator = self._getGraphIterator(graphPath)

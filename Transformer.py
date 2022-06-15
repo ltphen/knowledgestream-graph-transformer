@@ -8,10 +8,10 @@ def main():
     
     # Create adjacency matrix
     graphTransformer = GraphTransformer()
-    adjacencyMatrix = graphTransformer.generateAdjacency(args.graph)
+    adjacency = graphTransformer.generateAdjacency(args.graph)
     
     # Create and save graph
-    graph = Graph(adjacencyMatrix, graphTransformer.getShape())
+    graph = Graph(adjacency, graphTransformer.getShape())
     graph.save_graph("./data/kg/_undir")
     
 def parseArguments():
