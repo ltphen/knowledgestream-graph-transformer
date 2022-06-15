@@ -1,5 +1,6 @@
 from rdflib import Graph as RdfGraph
 from rdflib import Literal
+import numpy as np
 
 class GraphTransformer:
     """
