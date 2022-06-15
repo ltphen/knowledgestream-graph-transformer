@@ -1,7 +1,24 @@
 from GraphTransformer import GraphTransformer
 from Graph import Graph
-import os
+import os, argparse
 
+def main():
+    args = parseArguments()
+    createDirecotryStructure()
+    
+    # Create adjacency matrix
+    graphTransformer = GraphTransformer()
+    adjacencyMatrix = graphTransformer.generateAdjacency(args.graph)
+    
+    # Create and save graph
+    graph = Graph(adjacencyMatrix, graphTransformer.getShape())
+    graph.save_graph("./data/kg/_undir")
+    
+def parseArguments():
+    argumentParser = argparse.ArgumentParser()
+    argumentParser.add_argument("-g", "--graph", required=True, help="Knowledgegraph in turtle format")
+    return argumentParser.parse_args()
+    
 def createDirecotryStructure():
     try:
         os.mkdir("data")
@@ -10,9 +27,5 @@ def createDirecotryStructure():
     except FileExistsError:
         pass
 
-createDirecotryStructure()
-
-graphTransformer = GraphTransformer()
-adjacencyMatrix = graphTransformer.generateAdjacency("/home/sascha/head.ttl")
-graph = Graph(adjacencyMatrix, graphTransformer.getShape())
-graph.save_graph("./data/kg/_undir")
+if __name__ == '__main__':
+    main()

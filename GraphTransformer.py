@@ -30,12 +30,16 @@ class GraphTransformer:
 
         ### Generate adjacency matrix
         facts = []
+        count = 0
         graphIterator = self._getGraphIterator(graphPath)
         for rdfGraph in graphIterator():
             for sub, pred, obj in rdfGraph:
                 if type(obj) == Literal:
                     obj = '"{}"@{}'.format(obj, obj.language)
                 facts.append([self.nodeId[sub], self.nodeId[obj], self.relId[pred]])
+                count += 1
+                if count % 10000 == 0:
+                    print("Generated array for {} facts".format(count))
 
         adj = np.asarray(facts)
         print("Created adjacency matrix")
