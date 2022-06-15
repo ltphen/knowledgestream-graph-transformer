@@ -40,6 +40,11 @@ class GraphTransformer:
         adj = np.asarray(facts)
         print("Created adjacency matrix")
         return adj
+    
+    def getShape(self):
+        nodes = len(self.nodeId.keys())
+        relationships = len(self.relId.keys())
+        return (nodes, nodes, relationships)
 
     def _generateIndices(self, rdfGraph):
         for sub, pred, obj in rdfGraph:
@@ -85,10 +90,10 @@ class GraphTransformer:
         return graphIterator
     
     def _saveIDs(self):
-        with open("nodes.txt", 'w') as nodesFile:
+        with open("data/kg/nodes.txt", 'w') as nodesFile:
             for resource in self.nodeId.keys():
                 nodesFile.write("{} {}\n".format(self.nodeId[resource], resource))
         
-        with open("relations.txt", 'w') as relationsFile:
+        with open("data/kg/relations.txt", 'w') as relationsFile:
             for relation in self.relId.keys():
                 relationsFile.write("{} {}\n".format(self.relId[relation], relation))
