@@ -34,12 +34,11 @@ class GraphTransformer:
         graphIterator = self._getGraphIterator(graphPath)
         for rdfGraph in graphIterator():
             for sub, pred, obj in rdfGraph:
-                if type(obj) == Literal:
-                    obj = '"{}"@{}'.format(obj, obj.language)
-                facts.append([self.nodeId[sub], self.nodeId[obj], self.relId[pred]])
-                count += 1
-                if count % 10000 == 0:
-                    print("Generated array for {} facts".format(count))
+                if type(obj) != Literal:
+                    facts.append([self.nodeId[sub], self.nodeId[obj], self.relId[pred]])
+                    count += 1
+                    if count % 10000 == 0:
+                        print("Generated array for {} facts".format(count))
 
         adj = np.asarray(facts)
         print("Created adjacency matrix")
@@ -60,9 +59,8 @@ class GraphTransformer:
 
             # Set object id
             try:
-                if type(obj) == Literal:
-                    obj = '"{}"@{}'.format(obj, obj.language)
-                self.nodeId[obj]
+                if type(obj) != Literal:
+                    self.nodeId[obj]
             except KeyError:
                 self.nodeId[obj] = self._nextNodeId()
 
