@@ -1,6 +1,5 @@
 from rdflib import Graph as RdfGraph
 from rdflib import Literal
-import numpy as np
 
 class GraphTransformer:
     """
@@ -15,6 +14,7 @@ class GraphTransformer:
         self.relIdCount = 0
 
     def generateAdjacency(self, graphPath):
+        ### Generate IDs
         count = 0
         graphIterator = self._getGraphIterator(graphPath)
         for rdfGraph in graphIterator():
@@ -27,6 +27,7 @@ class GraphTransformer:
         self._saveIDs()
         print("Saved IDs")
 
+        ### Generate adjacency matrix
         facts = []
         graphIterator = self._getGraphIterator(graphPath)
         for rdfGraph in graphIterator():
@@ -90,6 +91,3 @@ class GraphTransformer:
         with open("relations.txt", 'w') as relationsFile:
             for relation in self.relId.keys():
                 relationsFile.write("{} {}\n".format(self.relId[relation], relation))
-
-g = GraphTransformer()
-print(g.generateAdjacency("/home/sascha/head.ttl"))
