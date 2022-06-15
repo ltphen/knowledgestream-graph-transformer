@@ -131,3 +131,7 @@ dmypy.json
 # Eclipse
 .project
 .pydevproject
+
+# Misc
+nodes.txt
+relations.txt
