@@ -15,7 +15,8 @@ class GraphTransformer:
 
     def generateAdjacency(self, graphPath):
         count = 0
-        for rdfGraph in self._readTurtleGraph(graphPath):
+        graphIterator = self._getGraphIterator(graphPath)
+        for rdfGraph in graphIterator():
             self._generateIndices(rdfGraph)
             count += 1
             if count % 10000 == 0:
@@ -23,8 +24,10 @@ class GraphTransformer:
 
         print("Generated all IDs")
         facts = []
-        for sub, pred, obj in self._readTurtleGraph(graphPath):
-            facts.append([self.nodeId[sub], self.nodeId[obj], self.relId[pred]])
+        graphIterator = self._getGraphIterator(graphPath)
+        for rdfGraph in graphIterator():
+            for sub, pred, obj in rdfGraph:
+                facts.append([self.nodeId[sub], self.nodeId[obj], self.relId[pred]])
 
         adj = np.asarray(facts)
         return adj
@@ -60,14 +63,16 @@ class GraphTransformer:
         self.relIdCount += 1
         return nextId
 
-    def _readTurtleGraph(self, graphPath):
-        with open(graphPath, 'r') as graphFile:
-            while True:
-                line = graphFile.readline()
+    def _getGraphIterator(self, graphPath):
+        graphFile = open(graphPath, 'r')
+        def graphIterator():
+            while line := graphFile.readline():
                 rdfGraph = RdfGraph()
                 rdfGraph.parse(data=line, format='ttl')
                 yield rdfGraph
+            graphFile.close()
 
+        return graphIterator
 
 g = GraphTransformer()
-g.generateAdjacency("/home/sascha/dbpedia.ttl")
+print(g.generateAdjacency("/home/sascha/head.ttl"))
