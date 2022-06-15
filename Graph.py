@@ -52,10 +52,10 @@ class Graph(object):
 
 	def __str__(self):
 		if self.N > MAX_MAT_DIM_DISPLAY or self.R > MAX_MAT_DIM_DISPLAY:
-			print "Graph too large ({}) to print.".format(self.shape)
+			print("Graph too large ({}) to print.".format(self.shape))
 			return ""
 		for k in xrange(self.R):
-			print np.array_str(self.getslice(k).toarray()), '\n'
+			print(np.array_str(self.getslice(k).toarray()), '\n')
 		return ''
 
 	def __repr__(self):
@@ -146,14 +146,14 @@ class Graph(object):
 		data = vals
 		self.csr = csr_matrix((data, indices, indptr), shape=self.shape)
 		if self.display:
-			print '==> wide-CSR matrix created: {:.4f} secs.'.format(time() - t1)
+			print('==> wide-CSR matrix created: {:.4f} secs.'.format(time() - t1))
 
 		# wide CSC matrix
 		if self.save_csc: # **USE WITH CAUTION**: can be very memory-expensive
 			t1 = time()
 			self.csc = csc_matrix((data, (ii, indices)), shape=self.shape)
 			if self.display:
-				print '==> wide-CSC matrix created: {:.4f} secs.'.format(time() - t1)
+				print('==> wide-CSC matrix created: {:.4f} secs.'.format(time() - t1))
 		
 		# indegree of a node (node-based), i.e. no. of neighboring nodes
 		if self.save_indeg_vec:
@@ -161,14 +161,14 @@ class Graph(object):
 			tmp_arr = unique_rows(d[:,:2], None) # ignore edge type
 			self.indeg_vec = np.bincount(tmp_arr[:,1], minlength=self.N)
 			if self.display:
-				print '==> Indegree vector (node-based) [len: {}] created: {:.4f} secs.'.format(
-					len(self.indeg_vec), time() - t1
+				print('==> Indegree vector (node-based) [len: {}] created: {:.4f} secs.'.format(
+					len(self.indeg_vec), time() - t1)
 				)
 
-		print '==> Graph created: {}. Total time: {:.4f} secs.'.format(
-			(self.N, self.N, self.R), time() - ts
+		print('==> Graph created: {}. Total time: {:.4f} secs.'.format(
+			(self.N, self.N, self.R), time() - ts)
 		)
-		print ''
+		print('')
 
 	def save_graph(self, dirpath=os.curdir):
 		"""
@@ -195,7 +195,7 @@ class Graph(object):
 		if self.save_indeg_vec:
 			np.save(join(dirpath, '{}indeg_vec.npy'.format(prefix)), self.indeg_vec)
 		if self.display:
-			print 'Saved graph data structures at: %s' % dirpath
+			print('Saved graph data structures at: %s' % dirpath)
 
 	@classmethod
 	def reconstruct(cls, dirpath, shape, adj=None, values=None, **kwargs):
@@ -205,13 +205,13 @@ class Graph(object):
 		"""
 		dirpath = abspath(expanduser(dirpath))
 		if not isdir(dirpath) or not exists(dirpath):
-			print '** Not a directory, or does not exist: %s' % dirpath
+			print('** Not a directory, or does not exist: %s' % dirpath)
 		if len(shape) != 3:
 			raise Exception('Incorrect graph dimensions.')
 		# reconstruct
 		try:
 			t1 = time()
-			print 'Reconstructing graph from %s' % dirpath
+			print('Reconstructing graph from %s' % dirpath)
 			sys.stdout.flush()
 			prefix = 'undir_' if kwargs.get('sym', True) else ''
 			datafile = join(dirpath, '{}data.npy'.format(prefix))
@@ -219,11 +219,11 @@ class Graph(object):
 			indptrfile = join(dirpath, '{}indptr.npy'.format(prefix))
 			indeg_vecfile =join(dirpath, '{}indeg_vec.npy'.format(prefix))
 			data = np.load(datafile)
-			print '=> Loaded: %s' % basename(datafile)
+			print('=> Loaded: %s' % basename(datafile))
 			indptr = np.load(indptrfile)
-			print '=> Loaded: %s' % basename(indptrfile)
+			print('=> Loaded: %s' % basename(indptrfile))
 			indices = np.load(indicesfile)
-			print '=> Loaded: %s' % basename(indicesfile)
+			print('=> Loaded: %s' % basename(indicesfile))
 			G = cls(None, None, reconstruct=True)
 			G.N, G.R, G.NR = shape[0], shape[2], shape[0] * shape[2]
 			G.shape = (G.N, G.NR)
@@ -234,22 +234,22 @@ class Graph(object):
 				indicesfile = join(dirpath, '{}csc_indices.npy'.format(prefix))
 				indptrfile = join(dirpath, '{}csc_indptr.npy'.format(prefix))
 				data = np.load(datafile)
-				print '=> Loaded: %s' % basename(datafile)
+				print('=> Loaded: %s' % basename(datafile))
 				indptr = np.load(indptrfile)
-				print '=> Loaded: %s' % basename(indptrfile)
+				print('=> Loaded: %s' % basename(indptrfile))
 				indices = np.load(indicesfile)
-				print '=> Loaded: %s' % basename(indicesfile)
+				print('=> Loaded: %s' % basename(indicesfile))
 				G.csc = csc_matrix((data, indices, indptr), shape=G.shape)
 			if kwargs.get('save_indeg_vec', True) and exists(indeg_vecfile):
 				G.indeg_vec = np.load(indeg_vecfile)
-				print '=> Loaded: %s' % basename(indeg_vecfile)
-			print '=> Graph loaded: {:.2f} secs.\n'.format(time() - t1)
+				print('=> Loaded: %s' % basename(indeg_vecfile))
+			print('=> Graph loaded: {:.2f} secs.\n'.format(time() - t1))
 			return G
-		except Exception, e:
-			print '** Error reconstructing graph: ',
-			exc_type, exc_obj, exc_tb = sys.exc_info()
-			print 'Line: {}, exception type: {}, exception: {}'.format(exc_tb.tb_lineno, exc_type, exc_obj)
-		print 'Trying to create graph using inputs..'
+		except Exception as e:
+			print('** Error reconstructing graph: ',
+			exc_type, exc_obj, exc_tb = sys.exc_info())
+			print('Line: {}, exception type: {}, exception: {}'.format(exc_tb.tb_lineno, exc_type, exc_obj))
+		print('Trying to create graph using inputs..')
 		if adj is None:
 			raise Exception('Either directory, or (adj, shape) is required.')
 		G = make_graph(adj, shape, values, kwargs)
@@ -351,7 +351,7 @@ def clean_adjacency(d, values, sym=True, display=True):
 	in that order.
 	"""
 	if display:
-		print 'Cleaning adjacency..'; sys.stdout.flush()
+		print('Cleaning adjacency..')
 	ts = time()
 	nrows = d.shape[0]
 	ncols = d.shape[1]
@@ -369,15 +369,15 @@ def clean_adjacency(d, values, sym=True, display=True):
 		t1 = time()
 		arr = symmetrize(arr)
 		if display:
-			print '==> Adjacency made symmetric: {:.4f} secs.'.format(time() - t1)
+			print('==> Adjacency made symmetric: {:.4f} secs.'.format(time() - t1))
 	elif display:
-		print '==> Adjacency: {}'.format((nrows, ncols))
+		print('==> Adjacency: {}'.format((nrows, ncols)))
 
 	# eliminate duplicates & re-order based on columns
 	t1 = time()
 	arr = unique_rows(arr, [1, 2, 0])
 	if display:
-		print '==> Unique rows extraction & re-ordering: {:.4f} secs.'.format(time() - t1)
+		print('==> Unique rows extraction & re-ordering: {:.4f} secs.'.format(time() - t1))
 
 	# if (np.max(arr[:, :2]) * np.max(arr[:, 2])) + np.max(arr[:, 1]) > np.iinfo(_int).max:
 	# 		d = arr[:, :3].astype(_int64)
@@ -385,5 +385,5 @@ def clean_adjacency(d, values, sym=True, display=True):
 	d = arr[:, :3].astype(_int64)
 	vals = arr[:, 3].astype(_float)
 	if display:
-		print '==> Adjacency cleaned: {:.4f} secs.'.format(time() - ts)
+		print('==> Adjacency cleaned: {:.4f} secs.'.format(time() - ts))
 	return d, vals
