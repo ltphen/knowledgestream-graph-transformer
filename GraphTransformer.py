@@ -1,4 +1,5 @@
 from rdflib import Graph as RdfGraph
+from rdflib import Literal
 import numpy as np
 
 class GraphTransformer:
@@ -23,15 +24,20 @@ class GraphTransformer:
                 print("Generated IDs for {} facts".format(count))
 
         print("Generated all IDs")
+        self._saveIDs()
+        print("Saved IDs")
+
         facts = []
         graphIterator = self._getGraphIterator(graphPath)
         for rdfGraph in graphIterator():
             for sub, pred, obj in rdfGraph:
+                if type(obj) == Literal:
+                    obj = '"{}"@{}'.format(obj, obj.language)
                 facts.append([self.nodeId[sub], self.nodeId[obj], self.relId[pred]])
 
         adj = np.asarray(facts)
+        print("Created adjacency matrix")
         return adj
-
 
     def _generateIndices(self, rdfGraph):
         for sub, pred, obj in rdfGraph:
@@ -43,6 +49,8 @@ class GraphTransformer:
 
             # Set object id
             try:
+                if type(obj) == Literal:
+                    obj = '"{}"@{}'.format(obj, obj.language)
                 self.nodeId[obj]
             except KeyError:
                 self.nodeId[obj] = self._nextNodeId()
@@ -73,6 +81,15 @@ class GraphTransformer:
             graphFile.close()
 
         return graphIterator
+    
+    def _saveIDs(self):
+        with open("nodes.txt", 'w') as nodesFile:
+            for resource in self.nodeId.keys():
+                nodesFile.write("{} {}\n".format(self.nodeId[resource], resource))
+        
+        with open("relations.txt", 'w') as relationsFile:
+            for relation in self.relId.keys():
+                relationsFile.write("{} {}\n".format(self.relId[relation], relation))
 
 g = GraphTransformer()
 print(g.generateAdjacency("/home/sascha/head.ttl"))
