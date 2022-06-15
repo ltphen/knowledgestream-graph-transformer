@@ -1,3 +1,4 @@
+# From  https://github.com/saschaTrippel/knowledgestream/blob/master/datastructures/rgraph.py
 import os
 import sys
 import numpy as np
