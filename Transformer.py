@@ -1,29 +1,31 @@
 from transformer.GraphTransformer import GraphTransformer
 from transformer.Graph import Graph
+from os.path import join
 import os, argparse
 
 def main():
     args = parseArguments()
-    createDirecotryStructure()
+    createDirecotryStructure(args.output)
     
     # Create adjacency matrix
-    graphTransformer = GraphTransformer()
+    graphTransformer = GraphTransformer(args.output)
     adjacency = graphTransformer.generateAdjacency(args.graph)
     
     # Create and save graph
     graph = Graph(adjacency, graphTransformer.getShape())
-    graph.save_graph("./data/kg/_undir")
+    graph.save_graph(join(args.output, "data/kg/_undir"))
     
 def parseArguments():
     argumentParser = argparse.ArgumentParser()
     argumentParser.add_argument("-g", "--graph", required=True, help="Knowledgegraph in turtle format")
+    argumentParser.add_argument("-o", "--output", required=False, default=".")
     return argumentParser.parse_args()
     
-def createDirecotryStructure():
+def createDirecotryStructure(outputPath):
     try:
-        os.mkdir("data")
-        os.mkdir("data/kg")
-        os.mkdir("data/kg/_undir")
+        os.mkdir(join(outputPath, "data"))
+        os.mkdir(join(outputPath, "data/kg"))
+        os.mkdir(join(outputPath, "data/kg/_undir"))
     except FileExistsError:
         pass
 

@@ -1,5 +1,6 @@
 from rdflib import Graph as RdfGraph
 from rdflib import Literal
+from os.path import join
 import numpy as np
 
 class GraphTransformer:
@@ -8,11 +9,12 @@ class GraphTransformer:
     requred to build Graph.
     """
 
-    def __init__(self):
+    def __init__(self, idPath):
         self.nodeId = dict()
         self.relId = dict()
         self.nodeIdCount = 0
         self.relIdCount = 0
+        self.idPath = idPath
 
     def generateAdjacency(self, graphPath):
         """
@@ -100,13 +102,13 @@ class GraphTransformer:
         return graphIterator
     
     def _saveIDs(self):
-        with open("data/kg/shape.txt", 'w') as shapeFile:
+        with open(join(self.idPath, "data/kg/shape.txt"), 'w') as shapeFile:
             shapeFile.write(str(self.getShape()) + '\n')
 
-        with open("data/kg/nodes.txt", 'w') as nodesFile:
+        with open(join(self.idPath, "data/kg/nodes.txt"), 'w') as nodesFile:
             for resource in self.nodeId.keys():
                 nodesFile.write("{} {}\n".format(self.nodeId[resource], resource))
         
-        with open("data/kg/relations.txt", 'w') as relationsFile:
+        with open(join(self.idPath, "data/kg/relations.txt"), 'w') as relationsFile:
             for relation in self.relId.keys():
                 relationsFile.write("{} {}\n".format(self.relId[relation], relation))
