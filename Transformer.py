@@ -18,6 +18,9 @@ def main():
     
     # Create contracted line graph
     contractedLineGraph = ContractedLineGraph(adjacency, graphTransformer.relIdCount)
+    contractedLineGraph.generateClg()
+    contractedLineGraph.generateTfIdf()
+    contractedLineGraph.saveTfIdf()
     
 def parseArguments():
     argumentParser = argparse.ArgumentParser()
