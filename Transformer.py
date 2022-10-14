@@ -1,5 +1,6 @@
 from transformer.GraphTransformer import GraphTransformer
 from transformer.Graph import Graph
+from transformer.ContractedLineGraph import ContractedLineGraph
 from os.path import join
 import os, argparse
 
@@ -15,6 +16,9 @@ def main():
     graph = Graph(adjacency, graphTransformer.getShape())
     graph.save_graph(join(args.output, "data/kg/_undir"))
     
+    # Create contracted line graph
+    contractedLineGraph = ContractedLineGraph(adjacency, graphTransformer.relIdCount)
+    
 def parseArguments():
     argumentParser = argparse.ArgumentParser()
     argumentParser.add_argument("-g", "--graph", required=True, help="Knowledgegraph in turtle format")
@@ -26,6 +30,7 @@ def createDirecotryStructure(outputPath):
         os.mkdir(join(outputPath, "data"))
         os.mkdir(join(outputPath, "data/kg"))
         os.mkdir(join(outputPath, "data/kg/_undir"))
+        os.mkdir(join(outputPath, "data/relsim"))
     except FileExistsError:
         pass
 
