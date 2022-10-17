@@ -15,14 +15,14 @@ class ContractedLineGraph:
 
         self.clg = np.eye(self.numberOfPredicates, self.numberOfPredicates)
         for i in range(len(self.adjacency)-1):
-            for j in range(i+1, len(self.adjacency)-1):
+            for j in range(i+1, len(self.adjacency)):
                 fact1 = self.adjacency[i]
                 fact2 = self.adjacency[j]
                 if self._containSameResource(fact1, fact2):
                     self.clg[fact1[2], fact2[2]] += 1
                     self.clg[fact2[2], fact1[2]] += 1
                     
-    def calculateTfIdf(self):
+    def generateTfIdf(self):
         pass
     
     def saveTfIdf(self):
