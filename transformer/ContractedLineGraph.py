@@ -40,8 +40,8 @@ class ContractedLineGraph:
                 self.coSim[i, j] = sim
                 self.coSim[j, i] = sim 
     
-    def saveTfIdf(self):
-        pass
+    def saveCoSim(self, path:str):
+        np.save(path, self.coSim)
     
     def _calculateCosineSimilarity(self, iVec, jVec):
         return np.dot(iVec, jVec,) / (norm(iVec) * norm(jVec))

@@ -21,7 +21,7 @@ def main():
     contractedLineGraph.generateClg()
     contractedLineGraph.generateTfIdf()
     contractedLineGraph.generateCosineSimilarity()
-    contractedLineGraph.saveTfIdf()
+    contractedLineGraph.saveCoSim(join(args.output, "data/relsim/predicate-similarity.npy"))
     
 def parseArguments():
     argumentParser = argparse.ArgumentParser()
