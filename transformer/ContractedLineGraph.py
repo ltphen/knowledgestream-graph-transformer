@@ -34,7 +34,7 @@ class ContractedLineGraph:
     def saveTfIdf(self):
         pass
     
-    def _calculateTfIdf(self, ri, rj):
+    def _calculateTfIdf(self, ri:int, rj:int):
         """
         C'(ri, rj, R) = log(1 + Cij) * log(R / |{ri | Cij > 0}|)
         R is the number of predicates
@@ -43,7 +43,7 @@ class ContractedLineGraph:
         factor2 = math.log(self.numberOfPredicates / self._countCoOccurences(ri))
         return factor1 * factor2
         
-    def _countCoOccurences(self, ri):
+    def _countCoOccurences(self, ri:int):
         counter = 0
         for j in range(self.numberOfPredicates):
             if self.clg[ri, j] > 0:
