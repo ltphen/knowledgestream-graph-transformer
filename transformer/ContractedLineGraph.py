@@ -9,34 +9,44 @@ class ContractedLineGraph:
         self.adjacency = adjacency
         self.numberOfPredicates = numberOfPredicates
         
+    def generate(self):
+        clg = self.generateClg()
+        print("Generated contracted line graph")
+        tfIdf = self.generateTfIdf(clg)
+        print("Calculated TF-IDF")
+        self.generateCosineSimilarity(tfIdf)
+        print("Calculated cosine similarity")
+        
     def generateClg(self):
         """
         Generate a contracted line graph (clg) out of the graph provided
         as list of assertions in self.adjacency.
         """
 
-        self.clg = np.eye(self.numberOfPredicates, self.numberOfPredicates)
+        clg = np.eye(self.numberOfPredicates, self.numberOfPredicates)
         for i in range(len(self.adjacency)-1):
             for j in range(i+1, len(self.adjacency)):
                 fact1 = self.adjacency[i]
                 fact2 = self.adjacency[j]
                 if self._containSameResource(fact1, fact2):
-                    self.clg[fact1[2], fact2[2]] += 1
-                    self.clg[fact2[2], fact1[2]] += 1
+                    clg[fact1[2], fact2[2]] += 1
+                    clg[fact2[2], fact1[2]] += 1
+        return clg
                     
-    def generateTfIdf(self):
-        self.tfIdf = np.eye(self.numberOfPredicates, self.numberOfPredicates)
+    def generateTfIdf(self, clg):
+        tfIdf = np.eye(self.numberOfPredicates, self.numberOfPredicates)
         for i in range(self.numberOfPredicates):
             for j in range(i+1, self.numberOfPredicates):
-                score = self._calculateTfIdf(i, j)
-                self.tfIdf[i, j] = score
-                self.tfIdf[j, i] = score
+                score = self._calculateTfIdf(i, j, clg)
+                tfIdf[i, j] = score
+                tfIdf[j, i] = score
+        return tfIdf
                 
-    def generateCosineSimilarity(self):
+    def generateCosineSimilarity(self, tfIdf):
         self.coSim = np.eye(self.numberOfPredicates, self.numberOfPredicates)
         for i in range(self.numberOfPredicates):
             for j in range(i+1, self.numberOfPredicates):
-                sim = self._calculateCosineSimilarity(self.tfIdf[i], self.tfIdf[j])
+                sim = self._calculateCosineSimilarity(tfIdf[i], tfIdf[j])
                 self.coSim[i, j] = sim
                 self.coSim[j, i] = sim 
     
@@ -46,19 +56,19 @@ class ContractedLineGraph:
     def _calculateCosineSimilarity(self, iVec, jVec):
         return np.dot(iVec, jVec,) / (norm(iVec) * norm(jVec))
     
-    def _calculateTfIdf(self, ri:int, rj:int):
+    def _calculateTfIdf(self, ri:int, rj:int, clg):
         """
         C'(ri, rj, R) = log(1 + Cij) * log(R / |{ri | Cij > 0}|)
         R is the number of predicates
         """
-        factor1 = math.log(1 + self.clg[ri, rj])
-        factor2 = math.log(self.numberOfPredicates / self._countCoOccurences(ri))
+        factor1 = math.log(1 + clg[ri, rj])
+        factor2 = math.log(self.numberOfPredicates / self._countCoOccurences(ri, clg))
         return factor1 * factor2
         
-    def _countCoOccurences(self, ri:int):
+    def _countCoOccurences(self, ri:int, clg):
         counter = 0
         for j in range(self.numberOfPredicates):
-            if self.clg[ri, j] > 0:
+            if clg[ri, j] > 0:
                 counter += 1
         return counter 
                 
