@@ -24,13 +24,24 @@ class ContractedLineGraph:
         """
 
         clg = np.eye(self.numberOfPredicates, self.numberOfPredicates)
-        for i in range(len(self.adjacency)-1):
-            for j in range(i+1, len(self.adjacency)):
-                fact1 = self.adjacency[i]
-                fact2 = self.adjacency[j]
-                if self._containSameResource(fact1, fact2):
+        
+        # resourceDict[resourceID] = [all facts that contain that resource]
+        resourceDict = dict()
+        for fact in self.adjacency:
+            self._addToResourceDict(resourceDict, fact)
+            
+        count = 0
+        for resource in resourceDict.keys():
+            for i in range(len(resourceDict[resource])-1):
+                for j in range(i+1, len(resourceDict[resource])):
+                    fact1 = resourceDict[resource][i]
+                    fact2 = resourceDict[resource][j]
                     clg[fact1[2], fact2[2]] += 1
                     clg[fact2[2], fact1[2]] += 1
+                count += 1
+                if count % 100000 == 0:
+                    print("Generated CLG for {} facts".format(count))
+                    
         return clg
                     
     def generateTfIdf(self, clg):
@@ -52,6 +63,15 @@ class ContractedLineGraph:
     
     def saveCoSim(self, path:str):
         np.save(path, self.coSim)
+        
+    def _addToResourceDict(self, rDict:dict, fact):
+        if not fact[0] in rDict.keys():
+            rDict[fact[0]] = []
+        if not fact[1] in rDict.keys():
+            rDict[fact[1]] = []
+            
+        rDict[fact[0]].append(fact)
+        rDict[fact[1]].append(fact)
     
     def _calculateCosineSimilarity(self, iVec, jVec):
         return np.dot(iVec, jVec,) / (norm(iVec) * norm(jVec))
@@ -71,7 +91,3 @@ class ContractedLineGraph:
             if clg[ri, j] > 0:
                 counter += 1
         return counter 
-                
-    def _containSameResource(self, fact1, fact2):
-        return (fact1[0] == fact2[0] or fact1[0] == fact2[1]
-            or fact1[1] == fact2[0] or fact1[1] == fact2[1])
