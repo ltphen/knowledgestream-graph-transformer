@@ -20,6 +20,7 @@ def main():
     contractedLineGraph = ContractedLineGraph(adjacency, graphTransformer.relIdCount)
     contractedLineGraph.generateClg()
     contractedLineGraph.generateTfIdf()
+    contractedLineGraph.generateCosineSimilarity()
     contractedLineGraph.saveTfIdf()
     
 def parseArguments():

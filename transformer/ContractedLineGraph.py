@@ -1,5 +1,6 @@
-import numpy as np
 import math
+import numpy as np
+from numpy.linalg import norm
 
 class ContractedLineGraph:
     def __init__(self, adjacency, numberOfPredicates:int):
@@ -30,9 +31,20 @@ class ContractedLineGraph:
                 score = self._calculateTfIdf(i, j)
                 self.tfIdf[i, j] = score
                 self.tfIdf[j, i] = score
+                
+    def generateCosineSimilarity(self):
+        self.coSim = np.eye(self.numberOfPredicates, self.numberOfPredicates)
+        for i in range(self.numberOfPredicates):
+            for j in range(i+1, self.numberOfPredicates):
+                sim = self._calculateCosineSimilarity(self.tfIdf[i], self.tfIdf[j])
+                self.coSim[i, j] = sim
+                self.coSim[j, i] = sim 
     
     def saveTfIdf(self):
         pass
+    
+    def _calculateCosineSimilarity(self, iVec, jVec):
+        return np.dot(iVec, jVec,) / (norm(iVec) * norm(jVec))
     
     def _calculateTfIdf(self, ri:int, rj:int):
         """
