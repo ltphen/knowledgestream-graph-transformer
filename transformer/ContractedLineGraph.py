@@ -10,6 +10,10 @@ class ContractedLineGraph:
         self.numberOfPredicates = numberOfPredicates
         
     def generate(self):
+        """
+        Perform all steps to calculate the required
+        cosine similarity between predicates.
+        """
         clg = self.generateClg()
         print("Generated contracted line graph")
         tfIdf = self.generateTfIdf(clg)
@@ -31,6 +35,8 @@ class ContractedLineGraph:
             self._addToResourceDict(resourceDict, fact)
             
         count = 0
+        # All facts in one list have one resource in common.
+        # Walk through list, count co-occurences of predicates.
         for resource in resourceDict.keys():
             for i in range(len(resourceDict[resource])-1):
                 for j in range(i+1, len(resourceDict[resource])):
