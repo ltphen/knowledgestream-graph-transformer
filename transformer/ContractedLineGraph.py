@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 class ContractedLineGraph:
     def __init__(self, adjacency, numberOfPredicates:int):
@@ -23,10 +24,31 @@ class ContractedLineGraph:
                     self.clg[fact2[2], fact1[2]] += 1
                     
     def generateTfIdf(self):
-        pass
+        self.tfIdf = np.eye(self.numberOfPredicates, self.numberOfPredicates)
+        for i in range(self.numberOfPredicates):
+            for j in range(i+1, self.numberOfPredicates):
+                score = self._calculateTfIdf(i, j)
+                self.tfIdf[i, j] = score
+                self.tfIdf[j, i] = score
     
     def saveTfIdf(self):
         pass
+    
+    def _calculateTfIdf(self, ri, rj):
+        """
+        C'(ri, rj, R) = log(1 + Cij) * log(R / |{ri | Cij > 0}|)
+        R is the number of predicates
+        """
+        factor1 = math.log(1 + self.clg[ri, rj])
+        factor2 = math.log(self.numberOfPredicates / self._countCoOccurences(ri))
+        return factor1 * factor2
+        
+    def _countCoOccurences(self, ri):
+        counter = 0
+        for j in range(self.numberOfPredicates):
+            if self.clg[ri, j] > 0:
+                counter += 1
+        return counter 
                 
     def _containSameResource(self, fact1, fact2):
         return (fact1[0] == fact2[0] or fact1[0] == fact2[1]
