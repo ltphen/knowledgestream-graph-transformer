@@ -1,6 +1,7 @@
 import math
 import numpy as np
 from numpy.linalg import norm
+from transformer.OccurrenceCounter import OccurrenceCounter
 
 class ContractedLineGraph:
     def __init__(self, adjacency, numberOfPredicates:int):
@@ -36,18 +37,17 @@ class ContractedLineGraph:
             
         count = 0
         # All facts in one list have one resource in common.
-        # Walk through list, count co-occurences of predicates.
+        # Walk through list, count co-occurrences of predicates.
+        
+        jobs = []
         for resource in resourceDict.keys():
-            for i in range(len(resourceDict[resource])-1):
-                for j in range(i+1, len(resourceDict[resource])):
-                    fact1 = resourceDict[resource][i]
-                    fact2 = resourceDict[resource][j]
-                    clg[fact1[2], fact2[2]] += 1
-                    clg[fact2[2], fact1[2]] += 1
-                count += 1
-                if count % 100000 == 0:
-                    print("Generated CLG for {} facts".format(count))
-                    
+            jobRunner = OccurrenceCounter(resourceDict[resource], clg)
+            jobs.append(jobRunner)
+            jobRunner.start()
+            
+        for job in jobs:
+            job.join()
+            
         return clg
                     
     def generateTfIdf(self, clg):
