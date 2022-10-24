@@ -1,7 +1,8 @@
-import math
+import math, time
 import numpy as np
 from numpy.linalg import norm
 from transformer.OccurrenceCounter import OccurrenceCounter
+from os.path import join
 
 class ContractedLineGraph:
     def __init__(self, adjacency, numberOfPredicates:int):
@@ -10,17 +11,27 @@ class ContractedLineGraph:
         self.adjacency = adjacency
         self.numberOfPredicates = numberOfPredicates
         
-    def generate(self):
+    def generate(self, experimentPath:str):
         """
         Perform all steps to calculate the required
         cosine similarity between predicates.
         """
+        start = time.time()
         clg = self.generateClg()
-        print("Generated contracted line graph")
+        end = time.time()
+        print("Generated contracted line graph in {} seconds".format(end - start))
+        self.saveClg(join(experimentPath, "contracted-line-graph.npy"), clg)
+        print("Saved contracted line graph")
+        start = time.time()
         tfIdf = self.generateTfIdf(clg)
-        print("Calculated TF-IDF")
+        end = time.time()
+        print("Calculated TF-IDF in {} seconds".format(end - start))
+        start = time.time()
         self.generateCosineSimilarity(tfIdf)
-        print("Calculated cosine similarity")
+        end = time.time()
+        print("Calculated cosine similarity in {} seconds".format(end - start))
+        self.saveCoSim(join(experimentPath, "predicate-similarity.npy"))
+        print("Saved cosine similarity")
         
     def generateClg(self):
         """
@@ -69,6 +80,9 @@ class ContractedLineGraph:
     
     def saveCoSim(self, path:str):
         np.save(path, self.coSim)
+        
+    def saveClg(self, path:str, clg):
+        np.save(path, clg)
         
     def _addToResourceDict(self, rDict:dict, fact):
         if not fact[0] in rDict.keys():
