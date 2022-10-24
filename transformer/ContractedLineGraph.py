@@ -2,6 +2,7 @@ import math, time
 import numpy as np
 from numpy.linalg import norm
 from transformer.OccurrenceCounterLock import OccurrenceCounterLock
+from transformer.OccurrenceCounterMem import OccurrenceCounterMem
 from os.path import join
 
 class ContractedLineGraph:
@@ -37,7 +38,7 @@ class ContractedLineGraph:
         self.saveCoSim(join(experimentPath, "predicate-similarity.npy"))
         print("Saved cosine similarity")
         
-    def generateClg(self):
+    def generateClgLock(self):
         """
         Generate a contracted line graph (clg) out of the graph provided
         as list of assertions in self.adjacency.
@@ -64,6 +65,77 @@ class ContractedLineGraph:
             job.join()
             
         return clg
+
+    def generateClgMem(self):
+        """
+        Generate a contracted line graph (clg) out of the graph provided
+        as list of assertions in self.adjacency.
+        """
+
+        clg = np.eye(self.numberOfPredicates, self.numberOfPredicates)
+        
+        # resourceDict[resourceID] = [all facts that contain that resource]
+        resourceDict = dict()
+        for fact in self.adjacency:
+            self._addToResourceDict(resourceDict, fact)
+            
+        count = 0
+        # All facts in one list have one resource in common.
+        # Walk through list, count co-occurrences of predicates.
+        
+        jobs = []
+        for resource in resourceDict.keys():
+            if len(jobs) > 4:
+                jobs.pop(0).join()
+            jobRunner = OccurrenceCounterMem(resourceDict[resource], self.numberOfPredicates)
+            jobs.append(jobRunner)
+            jobRunner.start()
+            
+        for job in jobs:
+            job.join()
+            
+        return clg
+
+    def generateClg(self):
+        """
+        Generate a contracted line graph (clg) out of the graph provided
+        as list of assertions in self.adjacency.
+        """
+
+        clg = np.eye(self.numberOfPredicates, self.numberOfPredicates)
+        
+        # resourceDict[resourceID] = [all facts that contain that resource]
+        resourceDict = dict()
+        for fact in self.adjacency:
+            self._addToResourceDict(resourceDict, fact)
+            
+        count = 0
+        # All facts in one list have one resource in common.
+        # Walk through list, count co-occurences of predicates.
+        for resource in resourceDict.keys():
+            predicateCount = dict()
+            
+            for fact in resourceDict[resource]:
+                self._countPredicate(predicateCount, fact[2],)
+                
+            itemsLst = list(predicateCount.items())
+            for i in range(len(itemsLst)-1):
+                for j in range(i+1, len(itemsLst)):
+                    predCount1 = itemsLst[i]
+                    predCount2 = itemsLst[j]
+                    clg[predCount1[0], predCount2[0]] += predCount1[1] * predCount2[1]
+                    clg[predCount2[0], predCount1[0]] += predCount1[1] * predCount2[1]
+
+                count += 1
+                if count % 100000 == 0:
+                    print("Generated CLG for {} facts".format(count))
+                    
+        return clg
+    
+    def _countPredicate(self, predicateCount:dict, predicate:int):
+        if not predicate in predicateCount.keys():
+            predicateCount[predicate] = 0
+        predicateCount[predicate] += 1
 
     def generateClgLegacy(self):
         """
