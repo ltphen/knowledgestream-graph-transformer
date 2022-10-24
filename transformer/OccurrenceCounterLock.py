@@ -1,6 +1,6 @@
 import threading
 
-class OccurrenceCounter(threading.Thread):
+class OccurrenceCounterLock(threading.Thread):
     count = 0
     locks = dict()
     
@@ -22,20 +22,20 @@ class OccurrenceCounter(threading.Thread):
                 self.clg[fact2[2], fact1[2]] += 1
                 self.releaseLock(fact1, fact2)
 
-            OccurrenceCounter.count += 1
-            if OccurrenceCounter.count % 10000 == 0:
-                print("Generated CLG for {} facts".format(OccurrenceCounter.count))
+            OccurrenceCounterLock.count += 1
+            if OccurrenceCounterLock.count % 10000 == 0:
+                print("Generated CLG for {} facts".format(OccurrenceCounterLock.count))
 
     def acquireLock(self, fact1, fact2):
         key = self._createKey(fact1, fact2)
-        if not key in OccurrenceCounter.locks.keys():
-            OccurrenceCounter.locks[key] = threading.Lock()
+        if not key in OccurrenceCounterLock.locks.keys():
+            OccurrenceCounterLock.locks[key] = threading.Lock()
             
-        OccurrenceCounter.locks[key].acquire()
+        OccurrenceCounterLock.locks[key].acquire()
     
     def releaseLock(self, fact1, fact2):
         key = self._createKey(fact1, fact2)
-        OccurrenceCounter.locks[key].release()
+        OccurrenceCounterLock.locks[key].release()
 
     def _createKey(self, fact1, fact2):
         pred1 = fact1[2]

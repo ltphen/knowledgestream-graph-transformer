@@ -1,7 +1,7 @@
 import math, time
 import numpy as np
 from numpy.linalg import norm
-from transformer.OccurrenceCounter import OccurrenceCounter
+from transformer.OccurrenceCounterLock import OccurrenceCounterLock
 from os.path import join
 
 class ContractedLineGraph:
@@ -56,7 +56,7 @@ class ContractedLineGraph:
         
         jobs = []
         for resource in resourceDict.keys():
-            jobRunner = OccurrenceCounter(resourceDict[resource], clg)
+            jobRunner = OccurrenceCounterLock(resourceDict[resource], clg)
             jobs.append(jobRunner)
             jobRunner.start()
             
