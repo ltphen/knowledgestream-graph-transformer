@@ -37,6 +37,7 @@ class ContractedLineGraph:
         """
         Generate a contracted line graph (clg) out of the graph provided
         as list of assertions in self.adjacency.
+        Uses multithreading, deprecated
         """
 
         clg = np.eye(self.numberOfPredicates, self.numberOfPredicates)
@@ -75,8 +76,9 @@ class ContractedLineGraph:
             self._addToResourceDict(resourceDict, fact)
             
         count = 0
+        size = len(resourceDict.keys())
         # All facts in one list have one resource in common.
-        # Walk through list, count co-occurences of predicates.
+        # Walk through list, count co-occurrences of predicates.
         for resource in resourceDict.keys():
             predicateCount = dict()
             
@@ -91,9 +93,9 @@ class ContractedLineGraph:
                     clg[predCount1[0], predCount2[0]] += predCount1[1] * predCount2[1]
                     clg[predCount2[0], predCount1[0]] += predCount1[1] * predCount2[1]
 
-                count += 1
-                if count % 100000 == 0:
-                    print("Generated CLG for {} facts".format(count))
+            count += 1
+            if count % 100000 == 0:
+                print("Generated CLG for {} out of {} resources".format(count, size))
                     
         return clg
     
