@@ -79,6 +79,7 @@ class ContractedLineGraph:
         size = len(resourceDict.keys())
         # All facts in one list have one resource in common.
         # Walk through list, count co-occurrences of predicates.
+        startTime = time.time()
         for resource in resourceDict.keys():
             predicateCount = dict()
             
@@ -95,7 +96,11 @@ class ContractedLineGraph:
 
             count += 1
             if count % 100000 == 0:
-                print("Generated CLG for {} out of {} resources".format(count, size))
+                endTime = time.time()
+                percentage = (count / size) * 100
+                print("Generated CLG for {} out of {} resources ({}%). Last 100.000 took {} seconds".
+                      format(count, size, percentage, endTime - startTime))
+                startTime = endTime
                     
         return clg
     
