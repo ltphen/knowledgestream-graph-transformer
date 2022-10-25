@@ -2,7 +2,6 @@ import math, time
 import numpy as np
 from numpy.linalg import norm
 from transformer.OccurrenceCounterLock import OccurrenceCounterLock
-from transformer.OccurrenceCounterMem import OccurrenceCounterMem
 from os.path import join
 
 class ContractedLineGraph:
@@ -21,10 +20,6 @@ class ContractedLineGraph:
         clg = self.generateClg()
         end = time.time()
         print("Generated contracted line graph in {} seconds".format(end - start))
-        start = time.time()
-        clg = self.generateClgLegacy()
-        end = time.time()
-        print("Generated legacy contracted line graph in {} seconds".format(end - start))
         self.saveClg(join(experimentPath, "contracted-line-graph.npy"), clg)
         print("Saved contracted line graph")
         start = time.time()
@@ -186,3 +181,10 @@ class ContractedLineGraph:
             if clg[ri, j] > 0:
                 counter += 1
         return counter 
+    
+    def _compare(self, clg1, clg2):
+        for i in range(self.numberOfPredicates):
+            for j in range(self.numberOfPredicates):
+                if i != j and clg1[i, j] != clg2[i, j]:
+                    return False
+        return True
